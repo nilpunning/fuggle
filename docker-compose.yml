@@ -2,3 +2,5 @@ version: '2.2'
 services:
   postgres:
     image: postgres:9.6.2-alpine
+    volumes:
+    - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d

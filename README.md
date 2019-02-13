@@ -1,100 +1,99 @@
+# Fuggle
+
+A simple recipe web app created to explore isomorphic web app design in Clojure and Clojurescript.  The app will function with Javascript turned off in the browser, but will have improved capability when turned on.
+
+## Why is this called Fuggle?
+[Fuggle](https://en.wikipedia.org/wiki/List_of_hop_varieties#Fuggle) is a type of hops.
+
 ## Requirements
-### Leiningen
+Leiningen
 ```
-lein upgrade
-
 $ lein -version
-Leiningen 2.5.3 on Java 1.8.0_25 Java HotSpot(TM) 64-Bit Server VM
+Leiningen 2.7.1 on Java 1.8.0_202 OpenJDK 64-Bit Server VM
 ```
 
-### Docker
+Docker
 ```
 $ docker -v
-Docker version 17.03.1-ce, build c6d412e
+Docker version 18.09.2-ce, build 62479626f2 
 ```
 
-### Docker Compose
+Docker Compose
 ```
-$ docker-compose --version                                        │
-docker-compose version 1.23.2, build unknown        
-```
-
-## Operations
-Deployments.
-1. Local developement
-2. Local uberjar to make sure uberjar is good before roll
-3. Prod uberjar on AWS
-    - See REPL deploy.clj functions 
-    - Upload docker image to repo
-    - Updates Cloudformation stack to point to new tag
-    - Cloudformation automatically rolls containers
-4.  Prod uberjar on single machine
-    - Increment project version
-    - uberjar-build.sh docker image
-    - prod-compose.sh up -d
-
-### Local Development with lein
-1.  Start services
-```
-docker-compose rm -fv postgres # only when you want a fresh db
-docker-compose build # only when necessary Dockerfile changed
-docker-compose up -d
-```
-2.  Start Clojurescript REPL
-```
-./figheel.sh
-```
-Or if you want to test without figwheel (which depends on websockets), which don't work so well in old browsers (ex. IE).  First comment out anything to do with fighweel in cljs/fuggle.dev.  Second, instead of running figwheel, run:
-```
-docker-compose exec fuggle_dev lein cljsbuild auto
+$ docker-compose --version
+docker-compose version 1.23.2, build unknown
 ```
 
+### Quickstart
+1.  Start using uberjar build
+    ```
+    ./uberjar-build.sh
+    ./uberjar-compose.sh up
+    ```
+1.  Navigate to [http://localhost:5000](http://localhost:5000)
+1.  Log in using these credentials:
+    ```
+    username: fake@email.com
+    password: pw
+    ```
+    
+## How to build the site
 ### Local uberjar
 ```
-./uberjar-compose.sh rm -fv postgres # only when you want a fresh db
-./uberjar-build.sh # only when necessary Dockerfile changed
+./uberjar-compose.sh rm -fv postgres  # only when you want a fresh db
+./uberjar-build.sh                    # only when necessary Dockerfile changed
 ./uberjar-compose.sh up
 ```
 
+### Local development
+1.  Start services
+    ```
+    docker-compose rm -fv postgres  # only when you want a fresh db
+    docker-compose build            # only when necessary Dockerfile changed
+    docker-compose up -d
+    ```
+2.  Start Clojurescript REPL
+    ```
+    ./figheel.sh
+    ```
+    Or if you want to test without figwheel (which depends on websockets), which does not work so well in old browsers (ex. IE).  First comment out anything to do with fighweel in cljs/fuggle.dev.  Second, instead of running figwheel, run:
+    ```
+    docker-compose exec fuggle_dev lein cljsbuild auto
+    ```
+
 ### Clojure REPL
-REPL should work with all three deployment scenarios.  Prod will require SSH tunnel, see SSH section below.
+REPL should work with both deployment scenarios.  For example with Cursive:
 1. Run -> Edit Configurations
 1. `+` -> Clojure REPL -> Remote
 1. Connect to server Host: localhost, Port: 5555
 1. Run -> Run
-1. `(fuggle.repl/go)`
+1. `(go)`
 
-### SSH
-```
-To ssh:
-ssh -i fuggle.pem ec2-user@<ip>
-
-To ssh tunnel into prod repl:
-ssh -i fuggle.pem -NT -L 5555:localhost:5555 ec2-user@<ip>
-```
-
-### Mapping dependencies
+### Map dependencies
 ```
 lein ns-dep-graph -platform :clj -name clj
 lein ns-dep-graph -platform :cljs -name cljs
 ```
 
-### Debugging dependency conflicts
+### Debug dependency conflicts
 ```
 lein pom
 mvn dependency:tree -Dverbose=true 
 ```
 
-## How to
-Dump db
+### Dump db
 ```
 pg_dumpall -U fuggleuser -h postgres  > db.out
 ```
-Reload db
+
+###Reload db
 ```
 psql -U postgres -f db.out postgres
 ```
-REPL inside container
+
+### Run a REPL inside the container
 ```
 lein repl :connect 0.0.0.0:5555
 ```
+
+Copyright 2016 David O'Meara

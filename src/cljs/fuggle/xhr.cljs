@@ -83,14 +83,16 @@
   [state method route query-params body on-success]
   (let [{csrf :csrf {xhrio :xhrio} :tmp-state} @state]
     (reset-xhrio! state xhrio on-success)
-    (.send
-      xhrio
-      (path-for route query-params)
-      method
-      (pr-str body)
-      (clj->js {"X-CSRF-Token" csrf
-                "Accept"       "application/edn"
-                "Content-Type" "application/edn"}))))
+    (.setTimeout
+      js/window
+      #(.send
+         xhrio
+         (path-for route query-params)
+         method
+         (pr-str body)
+         (clj->js {"X-CSRF-Token" csrf
+                   "Accept"       "application/edn"
+                   "Content-Type" "application/edn"})))))
 
 (defn xpost-multipart
   "Send http request.

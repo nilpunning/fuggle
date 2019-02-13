@@ -151,13 +151,3 @@
 
 (defn recipe-photo [req]
   (db/recipe-photo req))
-
-(comment
-
-  (db/search {:headers        {"accept" "application/edn"}
-              :request-method :get
-              :user-id        1
-              :query-params   {"q" "fri"}})
-
-  (pr-edn (db/settings-edit {:user-id 1}))
-  )

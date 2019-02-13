@@ -1,60 +1,8 @@
 -- name: time-of-day
 SELECT timeofday();
 
--- name: create-table-user!
-CREATE TABLE "user" (
-    id bigserial PRIMARY KEY,
-    email VARCHAR(256) UNIQUE NOT NULL,
-    password VARCHAR(128) NOT NULL,
-    last_name VARCHAR(256) NOT NULL,
-    first_name VARCHAR(256) NOT NULL);
-
--- name: insert-user<!
-INSERT INTO "user" (email, password, first_name, last_name)
-VALUES (:email, :password, :first_name, :last_name);
-
 -- name: user-password-where-email
 SELECT id, password FROM "user" WHERE email = :email;
-
--- name: create-table-recipe!
-CREATE TABLE recipe (
-    id bigserial PRIMARY KEY,
-    user_id bigint REFERENCES "user" NOT NULL,
-    last_modified TIMESTAMP NOT NULL DEFAULT now(),
-    title TEXT,
-    photo_name TEXT,
-    photo bytea,
-    source TEXT,
-    yield TEXT,
-    prep_time TEXT,
-    cooking_time TEXT,
-    ingredients TEXT,
-    tools TEXT,
-    notes TEXT,
-    directions TEXT,
-    tsv tsvector);
-
--- name: create-index-recipe!
-CREATE INDEX recipe_index ON recipe (user_id);
-
--- name: alter-recipe-add-last_modified!
-ALTER TABLE recipe ADD COLUMN
-    last_modified TIMESTAMP NOT NULL DEFAULT now();
-
--- name: alter-recipe-add-notes!
-ALTER TABLE recipe ADD COLUMN notes TEXT;
-
--- name: alter-recipe-add-tsv!
-ALTER TABLE recipe ADD COLUMN tsv tsvector;
-
--- name: alter-recipe-add-photo!
-ALTER TABLE recipe ADD COLUMN photo_name TEXT, ADD COLUMN photo bytea;
-
--- name: create-index-tsv!
-CREATE INDEX tsv_idx ON recipe USING gin(tsv);
-
--- name: drop-recipe-search-trigger!
-DROP TRIGGER tsvectorupdate ON recipe;
 
 -- name: search-recipe
 SELECT
@@ -200,15 +148,6 @@ WHERE category_id = :category_id;
 DELETE FROM recipe
 WHERE user_id = :user_id AND id = :id;
 
--- name: create-table-category!
-CREATE TABLE category (
-    id bigserial PRIMARY KEY,
-    user_id bigint REFERENCES "user" NOT NULL,
-    category TEXT);
-
--- name: create-index-category!
-CREATE INDEX category_index ON category (user_id);
-
 -- name: categories
 SELECT * FROM category
 WHERE user_id = :user_id
@@ -230,12 +169,6 @@ WHERE user_id = :user_id AND id = :id;
 -- name: delete-category!
 DELETE FROM category
 WHERE user_id = :user_id AND id = :id;
-
--- name: create-table-category-to-recipe!
-CREATE TABLE category_to_recipe (
-    category_id bigint REFERENCES category ON DELETE CASCADE NOT NULL,
-    recipe_id bigint REFERENCES recipe ON DELETE CASCADE NOT NULL,
-    primary key (category_id, recipe_id));
 
 -- name: categories-to-recipe
 SELECT category.id, category.category FROM category, category_to_recipe

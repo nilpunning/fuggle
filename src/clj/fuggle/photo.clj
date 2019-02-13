@@ -39,8 +39,3 @@
           bytes (resize tempfile 300)]
       {:photo_name (str "p" (checksum bytes) "." format-name)
        :photo      bytes})))
-
-(comment
-  (import [java.io File])
-  (photo-map (File. "/Users/dave/Desktop/fries-small.png"))
-  )
