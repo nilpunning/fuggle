@@ -1,0 +1,7 @@
+FROM fuggle:base
+
+COPY project.clj ./
+
+COPY . .
+
+CMD echo fuggle_dev

@@ -1,0 +1,9 @@
+version: '2.2'
+services:
+  fuggle:
+    image: fuggle:latest
+    ports:
+      - "5000:80"
+      - "5555:5555"
+    volumes:
+      - ${HOME}/.aws:/root/.aws

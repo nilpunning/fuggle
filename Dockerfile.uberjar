@@ -1,0 +1,5 @@
+FROM fuggle:base
+
+COPY target/fuggle-standalone.jar ./
+
+CMD java -jar fuggle-standalone.jar
